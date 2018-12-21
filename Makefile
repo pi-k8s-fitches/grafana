@@ -1,7 +1,7 @@
 MACHINE=$(shell uname -m)
 IMAGE=pi-k8s-fitches-grafana
 VERSION=0.1
-TAG="$(VERSION)-$(MACHINE)"
+TAG=$(VERSION)-$(MACHINE)
 ACCOUNT=gaf3
 NAMESPACE=fitches
 PORT=7069
