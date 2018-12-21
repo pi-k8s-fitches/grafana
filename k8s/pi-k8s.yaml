@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: fitches
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      nodeSelector:
+        storage: enabled
+      containers:
+      - name: grafana
+        image: docker.io/gaf3/pi-k8s-fitches-grafana:0.1-armv7l
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          initialDelaySeconds: 5
+          httpGet:
+            path: /
+            port: 3000
+        livenessProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          httpGet:
+            path: /
+            port: 3000
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: storage
+        - mountPath: /var/lib/grafana/plugins
+          name: plugins
+        - mountPath: /var/log
+          name: log
+      volumes:
+      - name: storage
+        hostPath:
+          path: /var/lib/pi-k8s/grafana/storage
+          type: DirectoryOrCreate
+      - name: plugins
+        hostPath:
+          path: /var/lib/pi-k8s/grafana/plugins
+          type: DirectoryOrCreate
+      - name: log
+        hostPath:
+          path: /var/lib/pi-k8s/grafana/log
+          type: DirectoryOrCreate
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: grafana
+  namespace: fitches
+spec:
+  selector:
+    app: grafana
+  type: NodePort
+  ports:
+  - name: gui
+    protocol: TCP
+    port: 7069
+    targetPort: 3000
+    nodePort: 30069
