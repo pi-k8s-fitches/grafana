@@ -15,7 +15,7 @@ BASE=debian:stretch-slim
 GRAFANA_URL=https://s3-us-west-2.amazonaws.com/grafana-releases/master/grafana-5.4.0-025d3032pre1.linux-amd64.tar.gz
 endif
 
-.PHONY: build shell start stop push create update delete create-dev update-dev delete-dev
+.PHONY: build dirs shell start stop push volumes create update delete volumes-dev create-dev update-dev delete-dev
 
 build:
 	docker build . --build-arg BASE=$(BASE) --build-arg GRAFANA_URL=$(GRAFANA_URL) -t $(ACCOUNT)/$(IMAGE):$(TAG)
